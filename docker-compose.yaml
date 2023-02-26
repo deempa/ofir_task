@@ -1,0 +1,29 @@
+version: '3'
+services:
+  flask-app:
+    build: ./flask_app
+    depends_on:
+      - db
+
+  db:
+    build: ./db
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+      - MYSQL_DATABASE=myappdb
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "33201:3306"
+
+  webserver:
+    build: ./ngnix
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/usr/share/nginx/html
+    depends_on:
+      - flask-app
+    #command: [nginx-debug, '-g', 'daemon off;']
+
+volumes:
+  db_data:
